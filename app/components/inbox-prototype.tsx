@@ -7,7 +7,7 @@
 //   A  — Bell in the sidebar header, popover list (2-line preview, click = open)
 //   A2 — A, plus expand-in-place to read the full text without leaving
 //        (chevron only when the preview is truncated), a mark-read icon
-//        button that doesn't navigate, and text search. CHOSEN.
+//        button (MailOpen, fixed slot) that doesn't navigate, and text search. CHOSEN.
 //   A3 — A, plus "View all" footer → full history page with search
 //   B — "Inbox" sidebar nav item opening a right-hand slide-over drawer
 //   C — A full Inbox page (/inbox-prototype), grouped by day, filter by
@@ -27,6 +27,7 @@ import {
   CreditCard,
   GraduationCap,
   Inbox as InboxIcon,
+  MailOpen,
   MessageSquare,
   UsersRound,
   X,
@@ -245,26 +246,35 @@ function VariantABell({ mode }: { mode: "link" | "expand" | "viewall" }) {
                       </span>
                     </span>
                   </button>
-                  {mode === "expand" && !n.read && (
-                    <button
-                      title="Mark as read"
-                      onClick={() => store.markRead(n.id)}
-                      className="self-start px-1.5 py-3 text-muted-foreground hover:text-foreground"
-                    >
-                      <Check className="size-4" />
-                    </button>
-                  )}
-                  {mode === "expand" && (overflowing[n.id] || isOpen) && (
-                    <button
-                      title={isOpen ? "Collapse" : "Read full text"}
-                      onClick={() => {
-                        setExpanded(isOpen ? null : n.id);
-                        store.markRead(n.id);
-                      }}
-                      className="self-start px-2 py-3 text-muted-foreground hover:text-foreground"
-                    >
-                      <ChevronDown className={cn("size-4 transition-transform", isOpen && "rotate-180")} />
-                    </button>
+                  {mode === "expand" && (
+                    // Two fixed-width slots so the mark-read button never moves when the chevron is absent.
+                    <div className="flex shrink-0 self-start pt-2.5 pr-2">
+                      <span className="flex w-7 justify-center">
+                        {!n.read && (
+                          <button
+                            title="Mark as read"
+                            onClick={() => store.markRead(n.id)}
+                            className="rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
+                          >
+                            <MailOpen className="size-4" />
+                          </button>
+                        )}
+                      </span>
+                      <span className="flex w-7 justify-center">
+                        {(overflowing[n.id] || isOpen) && (
+                          <button
+                            title={isOpen ? "Collapse" : "Read full text"}
+                            onClick={() => {
+                              setExpanded(isOpen ? null : n.id);
+                              store.markRead(n.id);
+                            }}
+                            className="rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
+                          >
+                            <ChevronDown className={cn("size-4 transition-transform", isOpen && "rotate-180")} />
+                          </button>
+                        )}
+                      </span>
+                    </div>
                   )}
                 </li>
                 );
