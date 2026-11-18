@@ -69,3 +69,14 @@ describe("noteEditorState", () => {
     });
   });
 });
+
+describe("noteEditorState after the server trims a saved note", () => {
+  it("treats a draft that differs only by surrounding whitespace as saved", () => {
+    const state = noteEditorState({
+      draft: "generics\n",
+      savedBody: "generics",
+    });
+    expect(state.canSave).toBe(false);
+    expect(state.status).toEqual({ kind: "saved" });
+  });
+});

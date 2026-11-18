@@ -27,9 +27,12 @@ export function describeNoteEditor({
   const length = draft.length;
   const over = length - MAX_NOTE_LENGTH;
   const tooLong = over > 0;
-  const dirty = draft !== (savedBody ?? "");
+  const trimmed = draft.trim();
+  // The save action trims the note before storing it, so compare what it
+  // would store, or a trailing newline would read as unsaved for ever.
+  const dirty = trimmed !== (savedBody ?? "");
   // The save action rejects a blank note, so the button must not offer it.
-  const blank = draft.trim().length === 0;
+  const blank = trimmed.length === 0;
 
   return {
     length,
