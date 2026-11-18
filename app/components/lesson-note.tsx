@@ -5,7 +5,11 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Textarea } from "~/components/ui/textarea";
 import { cn, formatRelativeTime } from "~/lib/utils";
-import { noteEditorState, type NoteEditorStatus } from "~/modules/lesson-notes";
+import {
+  noteEditorState,
+  type NoteEditorState,
+  type NoteEditorStatus,
+} from "~/modules/lesson-notes";
 
 export type LessonNoteData = { body: string; updatedAt: string } | null;
 
@@ -17,10 +21,12 @@ export function LessonNote({ note }: { note: LessonNoteData }) {
   const fetcher = useFetcher<{ ok: boolean; error?: string }>();
   const isSaving = fetcher.state !== "idle";
   const [draft, setDraft] = useState(note?.body ?? "");
+  const [sentDraft, setSentDraft] = useState(draft);
+  const message = fetcher.data?.error;
   const state = noteEditorState({
     draft,
     savedBody: note?.body ?? null,
-    error: fetcher.data?.error,
+    error: message ? { message, draft: sentDraft } : undefined,
   });
 
   return (
@@ -28,7 +34,11 @@ export function LessonNote({ note }: { note: LessonNoteData }) {
       <CardContent className="p-6">
         <NoteHeader />
 
-        <fetcher.Form method="post" className="space-y-2">
+        <fetcher.Form
+          method="post"
+          className="space-y-2"
+          onSubmit={() => setSentDraft(draft)}
+        >
           <input type="hidden" name="intent" value="save-note" />
           <Textarea
             name="body"
@@ -40,29 +50,43 @@ export function LessonNote({ note }: { note: LessonNoteData }) {
             className="resize-y"
           />
 
-          <div className="flex items-center gap-3">
-            <Button
-              type="submit"
-              size="sm"
-              disabled={isSaving || !state.canSave}
-            >
-              {isSaving ? "Saving..." : "Save note"}
-            </Button>
-
-            <NoteStatus status={state.status} updatedAt={note?.updatedAt} />
-
-            <span
-              className={cn(
-                "ml-auto text-xs",
-                state.tooLong ? "text-destructive" : "text-muted-foreground"
-              )}
-            >
-              {state.length} / {state.max}
-            </span>
-          </div>
+          <NoteFooter
+            state={state}
+            isSaving={isSaving}
+            updatedAt={note?.updatedAt}
+          />
         </fetcher.Form>
       </CardContent>
     </Card>
+  );
+}
+
+function NoteFooter({
+  state,
+  isSaving,
+  updatedAt,
+}: {
+  state: NoteEditorState;
+  isSaving: boolean;
+  updatedAt: string | undefined;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <Button type="submit" size="sm" disabled={isSaving || !state.canSave}>
+        {isSaving ? "Saving..." : "Save note"}
+      </Button>
+
+      <NoteStatus status={state.status} updatedAt={updatedAt} />
+
+      <span
+        className={cn(
+          "ml-auto text-xs",
+          state.tooLong ? "text-destructive" : "text-muted-foreground"
+        )}
+      >
+        {state.length} / {state.max}
+      </span>
+    </div>
   );
 }
 

@@ -7,6 +7,9 @@ export type NoteEditorStatus =
   | { kind: "saved" }
   | { kind: "blank" };
 
+/** A failed save: the server's message, and the draft it refused. */
+export type NoteSaveError = { message: string; draft: string };
+
 export type NoteEditorState = {
   length: number;
   max: number;
@@ -15,14 +18,18 @@ export type NoteEditorState = {
   status: NoteEditorStatus;
 };
 
-export function describeNoteEditor({
+/**
+ * What the lesson note editor shows for the Student's current draft: the
+ * character count, whether Save is offered, and the status line beside it.
+ */
+export function noteEditorState({
   draft,
   savedBody,
   error,
 }: {
   draft: string;
   savedBody: string | null;
-  error?: string;
+  error?: NoteSaveError;
 }): NoteEditorState {
   const length = draft.length;
   const over = length - MAX_NOTE_LENGTH;
@@ -39,7 +46,14 @@ export function describeNoteEditor({
     max: MAX_NOTE_LENGTH,
     tooLong,
     canSave: dirty && !blank && !tooLong,
-    status: statusFor({ error, tooLong, over, dirty, savedBody }),
+    status: statusFor({
+      // An error is about the draft that was sent; editing it moves on.
+      error: error?.draft === draft ? error.message : undefined,
+      tooLong,
+      over,
+      dirty,
+      savedBody,
+    }),
   };
 }
 

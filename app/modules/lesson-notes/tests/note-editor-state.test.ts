@@ -51,7 +51,11 @@ describe("noteEditorState", () => {
 
   it("refuses a draft over the maximum and says by how much", () => {
     const draft = "a".repeat(MAX_NOTE_LENGTH + 3);
-    const state = noteEditorState({ draft, savedBody: null, error: "nope" });
+    const state = noteEditorState({
+      draft,
+      savedBody: null,
+      error: { message: "nope", draft },
+    });
     expect(state.tooLong).toBe(true);
     expect(state.canSave).toBe(false);
     expect(state.status).toEqual({ kind: "too-long", over: 3 });
@@ -61,7 +65,7 @@ describe("noteEditorState", () => {
     const state = noteEditorState({
       draft: "generics",
       savedBody: null,
-      error: "Something went wrong",
+      error: { message: "Something went wrong", draft: "generics" },
     });
     expect(state.status).toEqual({
       kind: "error",
@@ -78,5 +82,28 @@ describe("noteEditorState after the server trims a saved note", () => {
     });
     expect(state.canSave).toBe(false);
     expect(state.status).toEqual({ kind: "saved" });
+  });
+});
+
+describe("noteEditorState after a failed save", () => {
+  it("keeps the error while the draft is the one that failed", () => {
+    const state = noteEditorState({
+      draft: "generics",
+      savedBody: null,
+      error: { message: "Something went wrong", draft: "generics" },
+    });
+    expect(state.status).toEqual({
+      kind: "error",
+      message: "Something went wrong",
+    });
+  });
+
+  it("drops the error once the Student edits the draft", () => {
+    const state = noteEditorState({
+      draft: "generics!",
+      savedBody: null,
+      error: { message: "Something went wrong", draft: "generics" },
+    });
+    expect(state.status).toEqual({ kind: "unsaved" });
   });
 });
