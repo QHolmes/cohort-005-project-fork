@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 
-// The findings the review left unfixed. The workflow posts each one as an
+// The decisions the review left for a person. The workflow posts each one as an
 // inline comment on the pull request, on its file and line.
 export const reviewSchema = z
   .strictObject({
@@ -22,10 +22,12 @@ export const reviewSchema = z
             .string()
             .min(1)
             .describe(
-              "The finding, in Markdown: the rule or spec line it breaks, and what to do instead."
+              "The decision, in Markdown: the rule or spec line it concerns, the options, and what a person has to settle."
             ),
         })
       )
-      .describe("One entry per finding you left unfixed. Empty is fine."),
+      .describe(
+        "One entry per decision you left for a person. Work you fixed does not go here. Empty is fine."
+      ),
   })
   .describe("The review's inline comments.");

@@ -12,6 +12,23 @@ npm install -g agent-browser
 agent-browser install
 ```
 
+In the factory workflows it is already installed, and
+`AGENT_BROWSER_EXECUTABLE_PATH` points it at the runner's Chrome.
+
+## Signing in
+
+The app has no login. The session's user is set by posting to
+`/api/switch-user`. For a Student with progress, use Emma Wilson (user 5):
+she is enrolled in both seeded courses.
+
+```bash
+agent-browser open http://localhost:5173/
+agent-browser eval "fetch('/api/switch-user',{method:'POST',body:new URLSearchParams({userId:'5'})}).then(r=>r.status)"
+agent-browser open http://localhost:5173/courses/introduction-to-typescript/lessons/1
+```
+
+Users 1–4 are the Admin and Instructors, in `scripts/seed.ts` order.
+
 ## Asking your own question
 
 Start the app with `npm run dev` first. The examples below use

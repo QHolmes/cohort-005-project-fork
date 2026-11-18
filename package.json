@@ -104,6 +104,8 @@
       "node scripts/check-file-tokens.js"
     ],
     "*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}": "oxlint -c .oxlintrc.json --no-error-on-unmatched-pattern",
-    "*.md": "prettier --check"
+    "*.md": "prettier --check",
+    "{app,scripts}/**/*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}": "node scripts/check-comments.js",
+    ".oxlintrc.json": "node scripts/check-lint-exemptions.js"
   }
 }

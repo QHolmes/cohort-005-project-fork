@@ -107,9 +107,16 @@ const [items, setItems] = useState(rows);
 const count = items.length;
 ```
 
-## A comment explains why
+## Moved code meets the standards
 
-Name and extract until a comment is unnecessary. A comment earns its place
-only for a _why_ the code cannot express: a constraint, a decision, a link to
-the ADR behind it. A comment that restates _what_ the code does goes stale the
-first time the code changes.
+Code a diff adds meets these standards, whether it was written fresh or moved
+from another file. Moving a function is the moment to fix what it breaks, not
+a way to carry the breach into a new file. Where the moved code has no test,
+write the test first.
+
+## One rule, both sides of the wire
+
+When the client checks input the server also checks (a trim, a length limit,
+an allowed value), both call the same function or read the same constant.
+Two copies of one rule drift: a note the server trimmed on save once showed
+"Unsaved changes" forever, because the editor compared the untrimmed draft.

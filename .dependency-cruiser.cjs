@@ -66,6 +66,14 @@ module.exports = {
       to: { path: `^${R}/[^/]+/tests/` },
     },
     {
+      name: "modules-do-not-import-components",
+      comment:
+        "A package sits below the UI: components import packages, never the reverse. A type a package needs from a component belongs in the package, and the component imports it from there.",
+      severity: "error",
+      from: { path: `^${R}/` },
+      to: { path: "^app/components/" },
+    },
+    {
       name: "no-circular",
       comment:
         "No dependency cycles. Scope to `^${R}/` if you want to allow cycles outside packages.",

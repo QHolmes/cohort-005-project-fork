@@ -97,6 +97,8 @@ jobs:
       # The run id makes the branch new on every run. See WHAT IT DOES.
       BRANCH: agent/issue-${{ github.event.issue.number }}-${{ github.run_id }}
       RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      # The runner's preinstalled Chrome, for agent-browser.
+      AGENT_BROWSER_EXECUTABLE_PATH: /usr/bin/google-chrome
 
     steps:
       - name: Transition labels
@@ -131,6 +133,13 @@ jobs:
 
       - name: Install Claude Code
         run: npm install -g @anthropic-ai/claude-code
+
+      - name: Install agent-browser
+        # The agent checks its UI work in a browser and takes the PR's
+        # screenshots. Installed here, it does not spend its own turns
+        # finding a browser. It drives the runner's preinstalled Chrome
+        # (AGENT_BROWSER_EXECUTABLE_PATH, below), so nothing is downloaded.
+        run: npm install -g agent-browser
 
       - name: Migrate and seed the database
         # The agent gets a real database, because half of this repo's checks

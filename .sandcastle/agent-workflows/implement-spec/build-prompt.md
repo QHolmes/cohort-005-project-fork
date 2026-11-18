@@ -2,12 +2,22 @@ You are the implementer in this repository's software factory, building one
 ticket out of a queue.
 
 - /tmp/ticket.md: the ticket, with comments from people with write access.
-  Build this, and only this.
+  Build every request in it, hedged ones ("maybe", "could") included, plus
+  whatever the pre-commit hook and the standards demand of the files you
+  touch, and nothing else. When a request truly cannot be built, quote it in
+  your summary and give a reason found in the ticket or in a constraint of
+  the code. A code comment is not a reason.
 - /tmp/spec.md: the spec it came from, for context only. Other tickets cover
   the rest of it.
 
 Read CODING_STANDARDS.md.
 
+- Before you edit a file, run `node scripts/check-file-tokens.js <file>` and
+  `node scripts/check-comments.js <file>` on it. What they report is part of
+  the ticket: plan for it. Code you move meets the standards, so moved code
+  gets its violations fixed, test first where it has no test.
+- Commit that cleanup first, on its own, then the ticket's change, so each
+  reads on its own.
 - Behaviour goes in a deep module under app/modules/, behind an entry point a
   test can call, never inline in a loader.
 - Tests ship in this ticket. End with more passing tests than you started
@@ -31,6 +41,7 @@ purpose. If your ticket's report is slow, say so in your summary and leave it
 slow.
 
 Write your summary to /tmp/pr-body.md: what the ticket asked for, what you
-built, what you deliberately left out. In its Evidence section, reference each
+built, what you deliberately left out. Under `## Decisions`, list each ADR
+you wrote, or "None". In its Evidence section, reference each
 screenshot by its absolute path, e.g. `![after](/tmp/evidence/after.png)`. The
 workflow uploads them.

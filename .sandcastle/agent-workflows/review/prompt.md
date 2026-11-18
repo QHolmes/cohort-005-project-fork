@@ -7,21 +7,48 @@ Review it with the code-review skill, .agents/skills/code-review/SKILL.md:
 - spec: /tmp/review-spec.md
 - standards: CODING_STANDARDS.md
 
-Leave the human reviewer as little as possible. Fix every finding you can on
-`{{BRANCH}}`, and commit each fix through the pre-commit hook. The workflow
-pushes your commits. Leave `.github/` untouched.
+To tell moved code from changed code, use
+`git diff --color-moved=plain --color-moved-ws=allow-indentation-change`.
 
-Every finding you leave unfixed becomes an inline comment on its file and
-line. You will be asked for them as structured output.
+Code the diff adds meets the standards, moved or not. Cleanup that the
+pre-commit hook or the standards demanded of a touched file is part of the
+change, not scope creep: review it under Standards.
 
-Write your verdict on the branch, after your fixes, to /tmp/review-verdict.md:
+## Work and decisions
+
+Sort every finding into one of two kinds:
+
+- **Work**: a broken standard or a missed request with a known fix. Fix it on
+  `{{BRANCH}}`. When the code has no test, write the test first, then the fix.
+  Commit each fix through the pre-commit hook. The workflow pushes your
+  commits.
+- **Decision**: something only a person can settle: a product call, a ticket
+  that reads two ways, a gap in the standards. Leave it.
+
+Work is never left for the human. Leave `.github/` untouched.
+
+An ADR the diff adds whose decision the ticket did not make is a decision:
+the build made a product call on its own. Leave it, quoting the ADR.
+
+## The verdict
+
+Spec is PASS only when every request in the ticket is met, hedged ones
+("maybe", "could") included. A request skipped for a reason the ticket does
+not give is unmet.
+
+Each finding lives in one place. A decision you leave becomes an inline
+comment on its file and line, and you will be asked for those as structured
+output. The verdict names it in one line and does not repeat it.
+
+Write the verdict on the branch, after your fixes, to /tmp/review-verdict.md:
 
     ## Standards: PASS | CHANGES REQUESTED
-    One line of reasoning, then the findings, worst first: each one fixed
-    (its commit) or left (its file and line), citing the rule by heading.
+    One line of reasoning. Then each fix: its commit and what it fixed,
+    citing the rule by heading. Then each decision left: `file:line` and the
+    rule, one line each.
 
     ## Spec: PASS | CHANGES REQUESTED
-    One line of reasoning, then the findings, fixed or left.
+    One line of reasoning. Then fixes and decisions left, as above.
 
     ## Rules this review wanted and could not find
     Anything you wanted to fail the change for that no standard covers.
