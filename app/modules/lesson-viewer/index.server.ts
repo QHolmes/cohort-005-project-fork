@@ -5,7 +5,11 @@ import {
 } from "./lib/lesson-page";
 import { markLessonComplete } from "./lib/progress";
 import { getCommentById } from "./lib/thread";
-import { computeResult, findLessonQuiz, parseQuizAnswers } from "./lib/quiz";
+import {
+  gradeAndRecordAttempt,
+  findLessonQuiz,
+  parseQuizAnswers,
+} from "./lib/quiz";
 
 export type { LessonOutline };
 export type FullLesson = Awaited<ReturnType<typeof loadFullLesson>>;
@@ -28,5 +32,5 @@ export const lessonViewer = {
 
   findLessonQuiz,
   parseQuizAnswers,
-  submitQuiz: computeResult,
+  submitQuiz: gradeAndRecordAttempt,
 };

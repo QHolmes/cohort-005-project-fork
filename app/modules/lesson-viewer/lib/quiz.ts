@@ -62,7 +62,8 @@ export type QuestionResult = {
   correctOptionId: number | null;
 };
 
-export function computeResult(
+/** Grades the answers and stores them as one attempt on the quiz. */
+export function gradeAndRecordAttempt(
   userId: number,
   quizId: number,
   selectedAnswers: Record<number, number>
